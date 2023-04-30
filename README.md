@@ -49,4 +49,4 @@ Let's see some interesting prompts:
   ```command 1 | command 2 &``` in this case ```command 1 | command 2``` will go to the background  
   ```command 1 | (command 2 &)``` the standart out of command 1 will go to the standart in of command 2 that will be executed in the background  
   
- 4. Those examples was just to highlight some interesting cases, there are a lot more commands, fill free to try all the commands combination you want, remember to put at least one space between commands, it can be more than one.
+ 4. Those examples was just to highlight some interesting cases, there are a lot more commands, feel free to try all the commands combination you want, remember to put at least one space between commands, it can be more than one.
