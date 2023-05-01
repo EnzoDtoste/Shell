@@ -16,14 +16,50 @@
 #define MAX_PROCESOS 10
 #define MAX_HISTORY 10
 #define HISTORY_FILE ".hist"
-#define SIZE_HELP 0
+#define SIZE_HELP 18
 
 struct passwd *pw;
 
-char *helps   [SIZE_HELP] = {
+char *helps   [SIZE_HELP] = {"my_shell",
+                             "cd",
+                             "exit",
+                             "true",
+                             "false",
+                             "background",
+                             "fg",
+                             "jobs",
+                             "history",
+                             "again",
+                             "ctrl+c",
+                             "chain",
+                             "conditional",
+                             "pipes",
+                             "redir",
+                             "set",
+                             "get",
+                             "unset",
 };
-char *commands_help[SIZE_HELP] = {
+char *commands_help[SIZE_HELP] = {"Primer proyecto de Sistemas Operativos\n\n Integrantes: \nEnzo Rojas D'Toste\nDaniel Abad Fundora\n\n Grupo: C-311\n\n Funcionalidades implementadas:\n\n cd: Se utiliza para cambiar el directorio actual\nexit: Se utiliza para cerrar el shell \n true:Comando que siempre tiene exito\n false: Comando que nunca tiene exito\nbackground: Permite enviar procesos al background\nfg: Permite enviar procesos del background al foreground\njobs: Lista los procesos que ocurren en el background\nhistory: Lista los ultimos 10 comandos ejecutados\n again: Permite volver a ejecutar comandos del history\ncntrl+c:Permite terminar el proceso actual\n chain: Permite crear instrucciones de varios comandos \n conditional: Permite simular instrucciones condicionales en una linea\npipes: Permite redirigir la salida de un comando a la entrada de otro\nredir: Permite redirigir la salida de un comando a un archivo o usar el texto de un archivo como entrada de un comando\nset permite asignarle valores a variables\nget: Permite ver el valor de una variable\n unset: Permite eliminar variables\n\n Para mas informacion acerca de un comando en especifico escribir help <nombre del comando>\n Nota estimada: 10 puntos\n"
+                                   ,
+"El comando cd permite cambiar de directorio actual\ncd<dir> cambia el directorio actual por el directorio especificado\ncd folder se mueve hacia la carpeta folder dentro del directorio actual\ncd sin parametros te redirecciona a Home\n\n Implementacion:\n Para la implemantacion de esta funcionalidad llamamos a la funcion chdir para cambiar el directorio actual.\nEn caso de no tener argumentos cambiamos la ruta a home/user\n Si el argumento escrito por elusuario esta entre parentesis, seran removidos(Con el objetivo de poder trabajar con carpetas con espacios en el nombre\n\n Implementado en la linea 838\n",
+"El comando exit finaliza la ejecucion del shell, utiliza para ello la funcion kill \nSe encuentra implemantado en la linea 627\n",
+"El comando true simula un comando que siempre tiene exito\n",
+"El comando false simula un comando que siempre fracasa\n",
+"Al utilizar el operador & luego de un comando hace que este se ejecute en el background.\nLa implementacion de esto se basa en ejecutar el comando y no utilizar la funcion wait.\n Utilizamos la funcion sendToBackground implementado en la linea 969\n",
+"El operador fg <pid> trae el proceso con pid especificado del background hacia el foreground.\n De no tener argumentos, trae el ultimo proceso enviado al background.\n Su implementacion se basa en hacerle wait() al comando requerido. Esta implementado en la linea 1017, en el metodo CallFg\n",
+"El comando jobs lista todos los procesos que estan ocurriendo en el background con sus respectivos pids y nombres\nPara ello se reocorre el array de nombres de procesos y de pids y se imprimen\nImplementado en la linea 1059\n",
+"El comando history muestra los ultimos 10 comandos ejecutados\nPara ello se lee el archivo .hist donde se guardan los ultimos 10 comandos ejecutados\nImplementado en la linea 1180\n",
+"El comando again n hace referencia al n-esimo comando de history.\nPara su implemantacion se sustituye cada aparicion del comando por el comando correspondiente en el history. Luego la linea se ejecuta normalmente\nImplementado en la linea 1287\n",
+"El comando ctrl+c permite finalizar la ejecucion de un proceso en foreground\nPara ello se utiliza la funcion kill\nImplementado en la linea 1035\n",
+"Los operadores( ; , || , && ) son utilizados para concatenar comandos.\n\nEl operador ; permite ejecutar varios comandos en la misma línea.\n\nEl comando command1 && command2 ejecuta command1 y luego,si este tiene éxito, ejecuta el comando command2\n\nEl comando command1 || command2 ejecuta command1 y si este no tiene éxito ejecuta command2.\n\nAdicionalmente se pueden combinar todos estos comandos en una sola línea.\n\n Los 3 operadores estan implementados dentro del metodo execute (linea 288)\n ",
+"Los comandos if, then, else y end nos permiten realizar una operación condicional en una sola línea.\n\nEl comando if <command1> then <command2> else <command3> end, ejecuta el comando <command1>, de tener exito ejecuta <command2> en caso contrario se ejecuta <command3>. \n\nEl operador end se usa para indicar en fin de la operación condicional. Es posible prescindir del comando else en la operacion condicional.\n\n Es posible anidar varias operaciones condicionales\n\n Se encuentra implemantado en el metodo CallIf (linea 1072).\n",
+"Al utilizar el operador command1|commad2 redirecciona la salida de command1 a la entrada de command2.\n La implementacion del mismo se basa en crear un nuevo proceso hijo\nSe utiliza el metodo CallCommandWithPipe (linea 667)\n",
+"Los operadores < > y >> permiten redireccionar las salidas de nuestros comandos\n El comando command1 < file envia el contenido del archivo file a la entrada de command1\n El comando command1>file sobreescribe el contenido del archivo file con la salida de command1\n El operador >> tiene un funcionamiento similar a > pero en lugar de sobreescribir el archivo, lo escribe al final del mismo.\n\n(Implementado linea 728)\n",
+"El comando set <var> <val> le asigna el valor val a la variable del sistema var, de no estar inicializada la variable, la inicializa.\n Como value puede ser colocado un comando entre comillas '' y se ejecutara el comando y su salida se guardara en la variable\nPara la implementacion hemos creado un diccionario en el cual usamos como key el nombre de la variable y su valor, como value\n\n Esta funcionalidad esta implementada en el metodo CallSet (linea 879) \n",
+"El comando get var muestra en la consola el valor que tiene asignada la variable a.\n Para su implementacion, revisamos si var se encuentra entre los keys del diccionario creado para la funcion set y, de existir, imprime el value asignado.\n Se utiliza la funcion CallGet (linea 933)\n",
+"El comando unset <var> elimina la variable var del sistema\n Para ello revisa si var se encuentra entre las keys del diccionario y de ser asi la elimina junto a su value correspondiente\n Implementado en el metodo GetUnSet(Linea 965)\n"
 };
+
 
 
 const char* COMMAND_HISTORY = "history";
@@ -1199,11 +1235,7 @@ int print_history() {
 }
 int callHelp(int left, int right, char commands[BUF_SZ][BUF_SZ]) {
     if (right == left + 1 || commands[left + 1] == NULL) {
-        printf("\n");
-
-        for (int i = 0; i < SIZE_HELP; i++) {
-            printf("%s: %s\n", helps[i], commands_help[i]);
-        }
+        printf("\n%s\n", commands_help[0]);
 
         return 0;
     }
